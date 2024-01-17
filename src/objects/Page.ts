@@ -123,6 +123,7 @@ export class Page {
                     </button>
                 </div>
                 <div class="video_container">
+                    <h3 class="recorder_video_device_disabled hidden">${this.traduction.recorder.video.disable}</h3>
                     <video id="preview_video" autoplay muted></video>
                     <div class="recorder_buttons_container">
                         <button title="${this.traduction.recorder.video.button.start}" class="recorder_rec_button" id="start_recording_button">

@@ -10,6 +10,8 @@ let mediaStreamConstraint: MediaStreamConstraints;
 
 let page = new Page(DOCUMENT_LANG);
 let device = new Device();
+export const IS_MOBILE = device.checkIfMobile();
+export const IS_MOBILE_OR_TABLET = device.checkIfMobileOrTablet();
 let recorder:Recorder|null = null;
 
 init();

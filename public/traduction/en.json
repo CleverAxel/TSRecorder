@@ -7,6 +7,7 @@
         "main" : "You can record your audio and/or video message from here by pressing the button below.",
         "leaveWhileRecording" : "You're recording a video/audio track, do you really want to quit? This will stop the recording.",
         "video":{
+            "disable": "Video device disabled.",
             "button":{
                 "stop" : "Stop the recording",
                 "pause" : "Pause the recording",

@@ -361,8 +361,12 @@ main h2 {
     border-radius: 50%;
 }
 
-.recorder .circle.blink_animation {
-    animation: blink_animation 1s steps(2, start) infinite;
+.recorder_video_device_disabled{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
 }
 
 footer {

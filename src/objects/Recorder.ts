@@ -30,6 +30,7 @@ export class Recorder {
 
     constructor(private tradRecorder:ITraductionRecorder) {
         this.element = {
+            VIDEO_DEVICE_DISABLED_H3: document.querySelector(".recorder_video_device_disabled")!,
             RECORDER_CONTAINER_DIV: document.querySelector(".recorder_container")!,
             RECORDER_DIV: document.querySelector(".recorder")!,
             CLOSE_RECORDER_BUTTON: document.querySelector(".close_recorder_button")!,
@@ -118,6 +119,7 @@ export class Recorder {
             return;
         }
         if (this.mediaStream != null) {
+            this.element.VIDEO_DEVICE_DISABLED_H3.classList.toggle("hidden");
             this.mediaStream.getVideoTracks()[0].enabled = !this.mediaStream.getVideoTracks()[0].enabled;
             this.element.TOGGLE_VIDEO_DEVICE_BUTTON.classList.toggle("disabled_by_user");
         }

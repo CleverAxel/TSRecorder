@@ -14,6 +14,7 @@ export interface ITraductionRecorder{
     main:string,
     leaveWhileRecording:string,
     video:{
+        disable:string,
         button:{
             stop:string,
             resume:string,
