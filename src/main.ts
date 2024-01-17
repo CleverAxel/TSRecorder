@@ -31,7 +31,7 @@ async function init() {
         .enumerateDevicesInSelect(deviceDetails.audio.deviceId, deviceDetails.video.deviceId, mediaStreamConstraint)
         .displayPossibilityToRecord();
 
-        recorder = new Recorder();
+        recorder = new Recorder(page.traduction.recorder);
         recorder
         .setDeviceConstraint(mediaStreamConstraint, deviceDetails.audio.deviceId, deviceDetails.video.deviceId)
         .initEventListeners()

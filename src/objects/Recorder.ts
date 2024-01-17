@@ -1,4 +1,5 @@
 import { IDOMElementRecorder } from "../interfaces/IDOMElement";
+import { ITraductionRecorder } from "../interfaces/ITraduction";
 const GAP = 5;
 const VIDEO_CONSTRAINT: MediaTrackConstraintSet = {
     width: 854,
@@ -27,7 +28,7 @@ export class Recorder {
     private isRecording = false;
     private isPaused = false;
 
-    constructor() {
+    constructor(private tradRecorder:ITraductionRecorder) {
         this.element = {
             RECORDER_CONTAINER_DIV: document.querySelector(".recorder_container")!,
             RECORDER_DIV: document.querySelector(".recorder")!,
@@ -77,6 +78,7 @@ export class Recorder {
         this.element.TOGGLE_VIDEO_DEVICE_BUTTON.addEventListener("click", this.toggleVideoDevice.bind(this))
 
         this.element.PAUSE_RESUME_BUTTON.addEventListener("click", this.pauseOrResumeVideo.bind(this));
+        this.element.STOP_RECORDING_BUTTON.addEventListener("click", this.stopRecording.bind(this));
 
         return this;
     }
@@ -121,7 +123,15 @@ export class Recorder {
         }
     }
 
-    private closeRecorder() {
+    private async closeRecorder() {
+        if(this.isRecording){
+            if(window.confirm(this.tradRecorder.leaveWhileRecording)){
+                await this.stopRecording();
+                this.closeRecorder();
+                return;
+            }
+        }
+        
         this.element.RECORDER_CONTAINER_DIV.classList.add("hidden");
         document.body.style.overflowY = "";
         this.isRecorderContainerUp = false;
@@ -153,7 +163,7 @@ export class Recorder {
 
         this.isPaused = !this.isPaused;
     }
-    
+
     private pauseRecording() {
         clearInterval(this.idInterval);
         this.element.PAUSE_RESUME_BUTTON.querySelector(".pause_icon")?.classList.add("hidden");
@@ -182,11 +192,13 @@ export class Recorder {
         this.isRecording = true;
         this.recordedChunks = [];
 
-        this.animateButtons();
+        this.animateButtonsIn();
         this.startCounterTimeElapsed();
 
         this.mediaRecorder = new MediaRecorder(this.mediaStream);
         this.initEventListenersOnMediaRecorder();
+        this.mediaRecorder.start();
+        console.info("started the recording");
     }
 
     private initEventListenersOnMediaRecorder(){
@@ -194,7 +206,7 @@ export class Recorder {
             console.warn("No media recorder set");
             return;
         }
-
+        
         this.mediaRecorder.ondataavailable = (blobEvent) => {
             this.recordedChunks.push(blobEvent.data);
         }
@@ -203,14 +215,26 @@ export class Recorder {
             console.info("Stopped the recording");
             let recordedBlob = new Blob(this.recordedChunks, { type: "video/webm" });
 
-            this.element.RECORDED_VIDEO.src = URL.createObjectURL(recordedBlob);
+            // this.element.RECORDED_VIDEO.src = URL.createObjectURL(recordedBlob);
 
             // this.downloadButton.href = this.recordedVideo.src;
             // this.downloadButton.download = "RecordedVideo.webm";
         }
     }
+    
+    private async stopRecording(){
+        if(!this.isRecording){
+            console.warn("Not recording");
+            return;
+        }
 
-    private animateButtons() {
+        this.isRecording = false;
+        this.mediaRecorder?.stop();
+        clearInterval(this.idInterval);
+        await this.animateButtonsOut();
+    }
+
+    private animateButtonsIn() {
         let buttonWidth = this.element.TOGGLE_VIDEO_DEVICE_BUTTON.getBoundingClientRect().width;
         this.element.START_RECORDING_BUTTON.classList.add("active");
         let offsetLeft = this.element.START_RECORDING_BUTTON.offsetLeft - 10;
@@ -225,6 +249,22 @@ export class Recorder {
             this.element.RECORDER_ACTION_BUTTONS_CONTAINER_DIV.classList.remove("off_screen");
 
         }, { once: true });
+    }
+
+    private animateButtonsOut():Promise<void>{
+        return new Promise((resolve) => {
+            this.element.RECORDER_ACTION_BUTTONS_CONTAINER_DIV.classList.add("off_screen");
+            this.element.RECORDER_ACTION_BUTTONS_CONTAINER_DIV.addEventListener("transitionend", () => {
+                if (this.mediaStreamConstraint?.video) {
+                    this.element.TOGGLE_VIDEO_DEVICE_BUTTON.style.transform = ``;
+                    this.element.RECORDER_ACTION_BUTTONS_CONTAINER_DIV.style.transform = ``;
+                }
+    
+                this.element.START_RECORDING_BUTTON.classList.remove("active");
+                this.element.START_RECORDING_BUTTON.style.transform = ``;
+                resolve();
+            }, {once: true});
+        })
     }
 
     private startCounterTimeElapsed() {
