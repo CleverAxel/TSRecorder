@@ -1,14 +1,14 @@
 import { defineConfig } from "vite";
-import basicSsl from '@vitejs/plugin-basic-ssl';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    basicSsl()
-  ],
+  // plugins: [
+  //   basicSsl()
+  // ],
   optimizeDeps: {
     exclude: ["@ffmpeg/ffmpeg", "@ffmpeg/util"],
   },
+  // // base: "/test_vite/"
   // server: {
   //   headers: {
   //     "Cross-Origin-Opener-Policy": "same-origin",
