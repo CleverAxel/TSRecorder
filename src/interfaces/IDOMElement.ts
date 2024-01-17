@@ -9,11 +9,14 @@ export interface IDOMElement{
 
 export interface IDOMElementRecorder{
     OPEN_RECORDER_BUTTON:HTMLButtonElement,
+    CLOSE_RECORDER_BUTTON:HTMLButtonElement,
+    RECORDER_CONTAINER_DIV:HTMLDivElement,
+    RECORDER_DIV:HTMLDivElement,
     START_RECORDING_BUTTON: HTMLButtonElement,
     STOP_RECORDING_BUTTON: HTMLButtonElement,
     PAUSE_RESUME_BUTTON: HTMLButtonElement,
     TOGGLE_VIDEO_DEVICE_BUTTON: HTMLButtonElement,
     PREVIEW_VIDEO: HTMLVideoElement,
-    RECORDED_VIDEO: HTMLDivElement,
+    RECORDED_VIDEO: HTMLVideoElement,
     TIME_ELAPSED_SINCE_RECORD_STARTED_SPAN: HTMLSpanElement,
 }

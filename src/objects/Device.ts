@@ -61,7 +61,7 @@ export class Device {
     private askAudioPermission(): Promise<IDeviceDetails> {
         return new Promise((resolve) => {
             let deviceDetails: IDeviceDetails = {
-                deviceId: null,
+                deviceId: undefined,
                 hasPermission: false,
                 exists: false,
             }
@@ -70,7 +70,7 @@ export class Device {
                 .then((stream) => {
                     deviceDetails.exists = true;
                     deviceDetails.hasPermission = true;
-                    deviceDetails.deviceId = stream.getTracks()[0].getSettings().deviceId ?? null;
+                    deviceDetails.deviceId = stream.getTracks()[0].getSettings().deviceId;
                     resolve(deviceDetails);
                 })
                 .catch((err: DOMException) => {
@@ -85,7 +85,7 @@ export class Device {
     private askVideoPermission(): Promise<IDeviceDetails> {
         return new Promise((resolve) => {
             let deviceDetails: IDeviceDetails = {
-                deviceId: null,
+                deviceId: undefined,
                 hasPermission: false,
                 exists: false,
             }
@@ -93,7 +93,7 @@ export class Device {
                 .then((stream) => {
                     deviceDetails.exists = true;
                     deviceDetails.hasPermission = true;
-                    deviceDetails.deviceId = stream.getTracks()[0].getSettings().deviceId ?? null;
+                    deviceDetails.deviceId = stream.getTracks()[0].getSettings().deviceId;
                     resolve(deviceDetails);
                 })
                 .catch((err: DOMException) => {

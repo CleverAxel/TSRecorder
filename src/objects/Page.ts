@@ -1,6 +1,5 @@
 import { DEVICE_STATUS } from "./Device";
 import { IDOMElement } from "../interfaces/IDOMElement";
-import { IDeviceConstraint } from "../interfaces/IDeviceConstraint";
 import { ITraduction, ITraductionErrorDevice } from "../interfaces/ITraduction";
 
 export class Page {
@@ -67,18 +66,18 @@ export class Page {
         this.element.RECORD_FROM_SITE_DIV?.classList.remove("hidden");
     }
 
-    public enumerateDevicesInSelect(audioDeviceId:string|null, videoDeviceId:string|null, deviceConstraint:IDeviceConstraint){
+    public enumerateDevicesInSelect(audioDeviceId:string|undefined, videoDeviceId:string|undefined, mediaStreamConstraint:MediaStreamConstraints){
         navigator.mediaDevices.enumerateDevices()
         .then((devices) => {            
             devices.forEach((device) => {
                 switch (device.kind) {
                     case "videoinput":
-                        if (deviceConstraint.video) {
+                        if (mediaStreamConstraint.video) {
                             this.element.VIDEO_DEVICE_SELECT.appendChild(this.createOptionDevice(device, device.deviceId == videoDeviceId));
                         }
                         break;
                     case "audioinput":
-                        if (deviceConstraint.audio) {
+                        if (mediaStreamConstraint.audio) {
                             this.element.AUDIO_DEVICE_SELECT.appendChild(this.createOptionDevice(device, device.deviceId == audioDeviceId));
                         }
                         break;
@@ -97,7 +96,7 @@ export class Page {
         return option;
     }
 
-    public removeUnavailableDeviceFromSelectableDevice(deviceConstraint:IDeviceConstraint){
+    public removeUnavailableDeviceFromSelectableDevice(deviceConstraint:MediaStreamConstraints){
         if (!deviceConstraint.audio) {
             this.element.SELECTABLE_DEVICES_CONTAINER_DIV.removeChild(document.querySelector(".device_container.audio_device") as Node);
         }
