@@ -313,6 +313,10 @@ main h2 {
     animation: blink_animation 1s steps(2, start) infinite;
 }
 
+.recorder_rec_button.active.paused .circle {
+    animation: none;
+}
+
 .recorder_toggle_video_button:disabled {
     display: none;
 }

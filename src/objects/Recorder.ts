@@ -19,12 +19,13 @@ export class Recorder {
 
     private mediaRecorder: MediaRecorder | null = null;
     private mediaStream: MediaStream | null = null;
-    private recordedChunks:Blob[] = [];
+    private recordedChunks: Blob[] = [];
 
     private timeElapsedInSeconds = 0;
-    private idInterval:any = null;
+    private idInterval: any = null;
 
     private isRecording = false;
+    private isPaused = false;
 
     constructor() {
         this.element = {
@@ -34,7 +35,7 @@ export class Recorder {
             OPEN_RECORDER_BUTTON: document.querySelector("#display_recorder_button")!,
             START_RECORDING_BUTTON: document.querySelector("#start_recording_button")!,
             STOP_RECORDING_BUTTON: document.querySelector("#stop_recording_button")!,
-            RECORDER_ACTION_BUTTONS_CONTAINER_DIV : document.querySelector(".recorder_action_buttons_container")!,
+            RECORDER_ACTION_BUTTONS_CONTAINER_DIV: document.querySelector(".recorder_action_buttons_container")!,
             PAUSE_RESUME_BUTTON: document.querySelector("#pause_resume_recording_button")!,
             TOGGLE_VIDEO_DEVICE_BUTTON: document.querySelector("#toggle_video_device_button")!,
             PREVIEW_VIDEO: document.querySelector("#preview_video")!,
@@ -75,10 +76,12 @@ export class Recorder {
         this.element.START_RECORDING_BUTTON.addEventListener("click", this.startRecording.bind(this));
         this.element.TOGGLE_VIDEO_DEVICE_BUTTON.addEventListener("click", this.toggleVideoDevice.bind(this))
 
+        this.element.PAUSE_RESUME_BUTTON.addEventListener("click", this.pauseOrResumeVideo.bind(this));
+
         return this;
     }
 
-    public startStreamingToPreviewVideo(): Promise<void>|null {
+    public startStreamingToPreviewVideo(): Promise<void> | null {
         if (this.mediaStreamConstraint == null) {
             console.error("No constraint passed");
             return null;
@@ -94,10 +97,8 @@ export class Recorder {
         })
     }
 
-    
-
     public openRecorder() {
-        if(this.mediaStream == null){
+        if (this.mediaStream == null) {
             window.alert("No media stream available, the record will fail.");
         }
 
@@ -109,12 +110,12 @@ export class Recorder {
         });
     }
 
-    private toggleVideoDevice(){
-        if(!this.mediaStreamConstraint?.video){
+    private toggleVideoDevice() {
+        if (!this.mediaStreamConstraint?.video) {
             window.alert("Didn't get the permission to use the video device or it doesn't exist.");
             return;
         }
-        if(this.mediaStream != null){
+        if (this.mediaStream != null) {
             this.mediaStream.getVideoTracks()[0].enabled = !this.mediaStream.getVideoTracks()[0].enabled;
             this.element.TOGGLE_VIDEO_DEVICE_BUTTON.classList.toggle("disabled_by_user");
         }
@@ -138,13 +139,42 @@ export class Recorder {
         }
     }
 
-    private startRecording(){
-        if(this.mediaStream == null){
-            console.info("No media stream available");
+    private pauseOrResumeVideo(){
+        if (!this.isRecording) {
+            console.warn("No recording started or no recorder set.")
             return;
         }
 
-        if(this.isRecording){
+        if (this.isPaused) {
+            this.resumeRecording();
+        } else {
+            this.pauseRecording();
+        }
+
+        this.isPaused = !this.isPaused;
+    }
+    
+    private pauseRecording() {
+        clearInterval(this.idInterval);
+        this.element.PAUSE_RESUME_BUTTON.querySelector(".pause_icon")?.classList.add("hidden");
+        this.element.PAUSE_RESUME_BUTTON.querySelector(".resume_icon")?.classList.remove("hidden");
+        this.element.START_RECORDING_BUTTON.classList.add("paused");
+    }
+
+    private resumeRecording() {
+        this.startInterval();
+        this.element.PAUSE_RESUME_BUTTON.querySelector(".pause_icon")?.classList.remove("hidden");
+        this.element.PAUSE_RESUME_BUTTON.querySelector(".resume_icon")?.classList.add("hidden");
+        this.element.START_RECORDING_BUTTON.classList.remove("paused");
+    }
+
+    private startRecording() {
+        if (this.mediaStream == null) {
+            console.warn("No media stream available");
+            return;
+        }
+
+        if (this.isRecording) {
             console.warn("Recording already started");
             return;
         }
@@ -153,32 +183,57 @@ export class Recorder {
         this.recordedChunks = [];
 
         this.animateButtons();
-
         this.startCounterTimeElapsed();
 
-        // this.mediaRecorder = new MediaRecorder(this.mediaStream);
+        this.mediaRecorder = new MediaRecorder(this.mediaStream);
+        this.initEventListenersOnMediaRecorder();
     }
 
-    private animateButtons(){
+    private initEventListenersOnMediaRecorder(){
+        if(this.mediaRecorder == null){
+            console.warn("No media recorder set");
+            return;
+        }
+
+        this.mediaRecorder.ondataavailable = (blobEvent) => {
+            this.recordedChunks.push(blobEvent.data);
+        }
+
+        this.mediaRecorder.onstop = () => {
+            console.info("Stopped the recording");
+            let recordedBlob = new Blob(this.recordedChunks, { type: "video/webm" });
+
+            this.element.RECORDED_VIDEO.src = URL.createObjectURL(recordedBlob);
+
+            // this.downloadButton.href = this.recordedVideo.src;
+            // this.downloadButton.download = "RecordedVideo.webm";
+        }
+    }
+
+    private animateButtons() {
         let buttonWidth = this.element.TOGGLE_VIDEO_DEVICE_BUTTON.getBoundingClientRect().width;
         this.element.START_RECORDING_BUTTON.classList.add("active");
         let offsetLeft = this.element.START_RECORDING_BUTTON.offsetLeft - 10;
         this.element.START_RECORDING_BUTTON.style.transform = `translateX(-${offsetLeft}px)`;
-        
+
         this.element.START_RECORDING_BUTTON.addEventListener("transitionend", () => {
-            this.element.TOGGLE_VIDEO_DEVICE_BUTTON.style.transform = `translateX(-${buttonWidth + (buttonWidth/2) + (GAP * 2)}px)`;
-            this.element.RECORDER_ACTION_BUTTONS_CONTAINER_DIV.classList.remove("off_screen");
-            
-            if(this.mediaStreamConstraint?.video){
-                this.element.RECORDER_ACTION_BUTTONS_CONTAINER_DIV.style.transform = `translateX(${(buttonWidth/2) + GAP}px)`;
+            if (this.mediaStreamConstraint?.video) {
+                this.element.TOGGLE_VIDEO_DEVICE_BUTTON.style.transform = `translateX(-${buttonWidth + (buttonWidth / 2) + (GAP * 2)}px)`;
+                this.element.RECORDER_ACTION_BUTTONS_CONTAINER_DIV.style.transform = `translateX(${(buttonWidth / 2) + GAP}px)`;
             }
 
-        }, {once:true});    
+            this.element.RECORDER_ACTION_BUTTONS_CONTAINER_DIV.classList.remove("off_screen");
+
+        }, { once: true });
     }
 
-    private startCounterTimeElapsed(){
+    private startCounterTimeElapsed() {
         this.timeElapsedInSeconds = 0;
         this.formaTimeInCounter();
+        this.startInterval();
+    }
+
+    private startInterval() {
         this.idInterval = setInterval(() => {
             this.timeElapsedInSeconds++;
             this.formaTimeInCounter();

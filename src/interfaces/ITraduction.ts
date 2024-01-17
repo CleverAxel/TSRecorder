@@ -17,7 +17,8 @@ export interface ITraductionRecorder{
             stop:string,
             resume:string,
             start:string,
-            pause:string
+            pause:string,
+            toggleVideoDevice:string
         }
     }
 }

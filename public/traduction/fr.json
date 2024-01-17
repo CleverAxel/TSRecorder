@@ -10,7 +10,8 @@
                 "stop" : "Arrêter l'enregistrement",
                 "pause" : "Mettre en pause l'enregistrement",
                 "resume" : "Reprendre l'enregistrement",
-                "start" : "Commencer l'enregistrement"
+                "start" : "Commencer l'enregistrement",
+                "toggleVideoDevice" : "Activer/désactiver la caméra"
             }
         }
     },
