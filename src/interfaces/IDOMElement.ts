@@ -15,6 +15,7 @@ export interface IDOMElementRecorder{
     START_RECORDING_BUTTON: HTMLButtonElement,
     STOP_RECORDING_BUTTON: HTMLButtonElement,
     PAUSE_RESUME_BUTTON: HTMLButtonElement,
+    RECORDER_ACTION_BUTTONS_CONTAINER_DIV:HTMLDivElement,
     TOGGLE_VIDEO_DEVICE_BUTTON: HTMLButtonElement,
     PREVIEW_VIDEO: HTMLVideoElement,
     RECORDED_VIDEO: HTMLVideoElement,

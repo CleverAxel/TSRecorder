@@ -242,7 +242,7 @@ main h2 {
 }
 
 .recorder_pause_resume_rec_button.hidden,
-.recorder_stop_rec_button.hidden{
+.recorder_stop_rec_button.hidden {
     display: none;
 }
 
@@ -263,11 +263,54 @@ main h2 {
     transition: all 100ms ease-in-out;
 }
 
-.recorder_rec_button.active{
+.recorder_action_buttons_container{
     position: absolute;
+    top: 0;
+    gap: 5px;
+    display: flex;
+    transition: all 100ms ease-in-out;
+}
+.recorder_action_buttons_container.off_screen{
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    gap: 5px;
+    display: flex;
+    transform: translateY(calc(100% + 20px));
+}
+
+/* .recorder_stop_rec_button, .recorder_pause_resume_rec_button{
+    position: absolute;
+    top: 0;
+}
+
+.recorder_stop_rec_button.off_screen,
+.recorder_pause_resume_rec_button.off_screen {
+    pointer-events: none;
+} */
+
+.recorder_rec_button .time_elapsed {
+    display: none;
+}
+
+.recorder_rec_button.active {
+    /* position: absolute; */
     pointer-events: none;
     padding-right: 5px;
     transition-duration: 200ms;
+}
+
+.recorder_rec_button.active .title {
+    display: none;
+}
+
+.recorder_rec_button.active .time_elapsed {
+    display: block;
+}
+
+.recorder_rec_button.active .circle {
+    animation: blink_animation 1s steps(2, start) infinite;
 }
 
 .recorder_toggle_video_button:disabled {
@@ -296,13 +339,14 @@ main h2 {
     fill: white;
 }
 
-.recorder_stop_rec_button .square{
+.recorder_stop_rec_button .square {
     width: 15px;
     height: 15px;
     background-color: var(--black);
     border-radius: 3px;
 }
-.recorder_stop_rec_button:hover .square{
+
+.recorder_stop_rec_button:hover .square {
     background-color: white;
 }
 
@@ -313,7 +357,7 @@ main h2 {
     border-radius: 50%;
 }
 
-.recorder .circle.blink_animation{
+.recorder .circle.blink_animation {
     animation: blink_animation 1s steps(2, start) infinite;
 }
 
@@ -324,6 +368,6 @@ footer {
 
 @keyframes blink_animation {
     to {
-      visibility: hidden;
+        visibility: hidden;
     }
-  }
+}

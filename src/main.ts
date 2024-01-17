@@ -35,7 +35,10 @@ async function init() {
         recorder
         .setDeviceConstraint(mediaStreamConstraint, deviceDetails.audio.deviceId, deviceDetails.video.deviceId)
         .initEventListeners()
-        ?.startStreamingToPreviewVideo();
+        ?.startStreamingToPreviewVideo()
+        ?.then(() => {
+            recorder?.openRecorder();
+        });
 
 
     } catch (status:any) {
