@@ -2,8 +2,8 @@ import { IDOMElementRecorder } from "../interfaces/IDOMElement";
 import { ITraductionRecorder } from "../interfaces/ITraduction";
 const GAP = 5;
 const VIDEO_CONSTRAINT: MediaTrackConstraintSet = {
-    width: 854,
-    height: 480,
+    width: 1280, //854
+    height: 720, //480
     frameRate: { ideal: 24, max: 24 },
     facingMode: "user",
     deviceId: undefined,
@@ -127,7 +127,6 @@ export class Recorder {
         if(this.isRecording){
             if(window.confirm(this.tradRecorder.leaveWhileRecording)){
                 await this.stopRecording();
-                this.closeRecorder();
                 return;
             }
         }
@@ -168,13 +167,16 @@ export class Recorder {
         clearInterval(this.idInterval);
         this.element.PAUSE_RESUME_BUTTON.querySelector(".pause_icon")?.classList.add("hidden");
         this.element.PAUSE_RESUME_BUTTON.querySelector(".resume_icon")?.classList.remove("hidden");
+        this.element.PAUSE_RESUME_BUTTON.title = this.tradRecorder.video.button.resume;
         this.element.START_RECORDING_BUTTON.classList.add("paused");
+
     }
 
     private resumeRecording() {
         this.startInterval();
         this.element.PAUSE_RESUME_BUTTON.querySelector(".pause_icon")?.classList.remove("hidden");
         this.element.PAUSE_RESUME_BUTTON.querySelector(".resume_icon")?.classList.add("hidden");
+        this.element.PAUSE_RESUME_BUTTON.title = this.tradRecorder.video.button.pause;
         this.element.START_RECORDING_BUTTON.classList.remove("paused");
     }
 
@@ -213,7 +215,7 @@ export class Recorder {
 
         this.mediaRecorder.onstop = () => {
             console.info("Stopped the recording");
-            let recordedBlob = new Blob(this.recordedChunks, { type: "video/webm" });
+            // let recordedBlob = new Blob(this.recordedChunks, { type: "video/webm" });
 
             // this.element.RECORDED_VIDEO.src = URL.createObjectURL(recordedBlob);
 
@@ -232,6 +234,7 @@ export class Recorder {
         this.mediaRecorder?.stop();
         clearInterval(this.idInterval);
         await this.animateButtonsOut();
+        this.closeRecorder();
     }
 
     private animateButtonsIn() {
