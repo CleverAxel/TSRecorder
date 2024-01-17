@@ -1,0 +1,19 @@
+export interface IDOMElement{
+    SELECTABLE_DEVICES_CONTAINER_DIV:HTMLDivElement,
+    MAIN:HTMLElement,
+    RECORD_FROM_SITE_DIV:HTMLDivElement,
+    VIDEO_DEVICE_SELECT:HTMLSelectElement,
+    AUDIO_DEVICE_SELECT:HTMLSelectElement,
+    ERROR_BOX_DEVICE_DIV:HTMLDivElement,
+}
+
+export interface IDOMElementRecorder{
+    OPEN_RECORDER_BUTTON:HTMLButtonElement,
+    START_RECORDING_BUTTON: HTMLButtonElement,
+    STOP_RECORDING_BUTTON: HTMLButtonElement,
+    PAUSE_RESUME_BUTTON: HTMLButtonElement,
+    TOGGLE_VIDEO_DEVICE_BUTTON: HTMLButtonElement,
+    PREVIEW_VIDEO: HTMLVideoElement,
+    RECORDED_VIDEO: HTMLDivElement,
+    TIME_ELAPSED_SINCE_RECORD_STARTED_SPAN: HTMLSpanElement,
+}

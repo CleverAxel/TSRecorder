@@ -1,0 +1,35 @@
+import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { fetchFile, toBlobURL } from "@ffmpeg/util";
+
+const video = document.querySelector("video");
+
+let ffmpeg = new FFmpeg();
+load();
+async function load(){
+  //https://github.com/ffmpegwasm/ffmpeg.wasm/issues/532
+  // const baseURL = "http://localhost:5173";
+  await ffmpeg.load({
+    coreURL: await toBlobURL(`/ffmpeg-core.js`, "text/javascript"),
+    wasmURL: await toBlobURL(
+      `/ffmpeg-core.wasm`,
+      "application/wasm"
+    ),
+  });
+
+
+
+  await doit();
+}
+
+async function doit(){
+  const videoURL = "https://raw.githubusercontent.com/ffmpegwasm/testdata/master/video-15s.avi";
+  await ffmpeg.writeFile("input.avi", await fetchFile(videoURL));
+  await ffmpeg.exec(["-i", "input.avi", "output.mp4"]);
+  const fileData = await ffmpeg.readFile('output.mp4');
+  const data = new Uint8Array(fileData as ArrayBuffer);
+  if (video) {
+    video.src = URL.createObjectURL(
+      new Blob([data.buffer], { type: 'video/mp4' })
+    )
+  }
+}
